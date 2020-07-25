@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-lg-9 col-md-8 col-12 pb-2">
+            {% block content %}
+            {% endblock %}
+        </div>
+        <div class="col-lg-3 col-md-4 pr-md-5 col-6 pb-4">
+            <h2>{{ user.preferred_name }}</h2>
+            <div class="list-group">
+                <a href="{% url "profile" %}" class="list-group-item px-3 py-2 {% if request.resolver_match.url_name == "profile" %}active{% endif %}">Profile</a>
+                <a href="{% url "password_change" %}" class="list-group-item px-3 py-2 {% if request.resolver_match.url_name == "password_change" %}active{% endif %}">Change Password</a>
+                {% if user.is_superuser %}
+                    <a href="{% url "create_account" %}" class="list-group-item px-3 py-2 {% if request.resolver_match.url_name == "create_account" %}active{% endif %}">Create Account</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

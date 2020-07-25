@@ -1,0 +1,3 @@
+{% load i18n %}{% autoescape off %}
+{% blocktrans %}Account Created on {{ site_name }} - Please Set Password{% endblocktrans %}
+{% endautoescape %}

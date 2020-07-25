@@ -1,0 +1,70 @@
+{% if layout_class == "form-row" %}
+    <div class="form-row">
+        {% if field1 %}
+            <div class="form-group {{ field1_class|default:"col" }}">
+                {{ field1.label_tag }}
+                {% styled_field field1 class=field_class|default:"form-control" error_class=error_class|default:"is-invalid" placeholder=placeholder1|default:"" %}
+                <div class="invalid-feedback">
+                    {{ field1.errors }}
+                </div>
+                {% if field1.help_text %}
+                    <small id="passwordHelpBlock"
+                           class="form-text text-muted">{{ field1.help_text|safe }}</small>
+                {% endif %}
+            </div>
+        {% endif %}
+        {% if field2 %}
+            <div class="form-group {{ field2_class|default:"col" }}">
+                {{ field2.label_tag }}
+                {% styled_field field2 class=field_class|default:"form-control" error_class=error_class|default:"is-invalid" placeholder=placeholder2|default:"" %}
+                <div class="invalid-feedback">
+                    {{ field2.errors }}
+                </div>
+                {% if field2.help_text %}
+                    <small id="passwordHelpBlock"
+                           class="form-text text-muted">{{ field2.help_text|safe }}</small>
+                {% endif %}
+            </div>
+        {% endif %}
+        {% if field3 %}
+            <div class="form-group {{ field3_class|default:"col" }}">
+                {{ field3.label_tag }}
+                {% styled_field field3 class=field_class|default:"form-control" error_class=error_class|default:"is-invalid" placeholder=placeholder3|default:"" %}
+                <div class="invalid-feedback">
+                    {{ field3.errors }}
+                </div>
+                {% if field3.help_text %}
+                    <small id="passwordHelpBlock"
+                           class="form-text text-muted">{{ field3.help_text|safe }}</small>
+                {% endif %}
+            </div>
+        {% endif %}
+        {% if field4 %}
+            <div class="form-group {{ field4_class|default:"col" }}">
+                {{ field4.label_tag }}
+                {% styled_field field4 class=field_class|default:"form-control" error_class=error_class|default:"is-invalid" placeholder=placeholder4|default:"" %}
+                <div class="invalid-feedback">
+                    {{ field4.errors }}
+                </div>
+                {% if field4.help_text %}
+                    <small id="passwordHelpBlock"
+                           class="form-text text-muted">{{ field4.help_text|safe }}</small>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+{% else %}
+    <div class="form-row">
+        <div class="form-group {{ form_group_class|default:"col" }}">
+            {{ field.label_tag }}
+            {% styled_field field class=field_class|default:"form-control" error_class=error_class|default:"is-invalid" placeholder=placeholder|default:"" %}
+            <div class="invalid-feedback">
+                {{ field.errors }}
+            </div>
+            {% if field.help_text %}
+                <small id="passwordHelpBlock"
+                       class="form-text text-muted">{{ field.help_text|safe }}</small>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}

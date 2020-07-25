@@ -1,0 +1,59 @@
+{% extends "registration/password_reset_layout.html" %}
+{% load static %}
+
+{% block title %}
+    Create Account
+{% endblock %}
+
+<!-- Don't show navbar by overriding ths block -->
+{% block navbar %}
+{% endblock %}
+
+{% block content %}
+    <div class="text-center mb-3" style="margin-top: -60px;">
+        <img src="{% static "favicon.png" %}" alt="PR5 Logo" width="100px">
+    </div>
+    <h1 class="mb-4">Create Account</h1>
+
+    <form method="post">{% csrf_token %}
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+        <div class="form-group">
+            {{ form.email.label_tag }}
+            {% styled_field form.email class="form-control" placeholder="example@u.yale-nus.edu.sg" error_class="is-invalid" %}
+            <div class="invalid-feedback">
+                {{ form.email.errors }}
+            </div>
+            {% if form.email.help_text %}
+                <small id="passwordHelpBlock"
+                       class="form-text text-muted">{{ form.email.help_text|safe }}</small>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{ form.name.label_tag }}
+            {% styled_field form.name class="form-control" placeholder="E.g. John Doe" error_class="is-invalid" %}
+            <div class="invalid-feedback">
+                {{ form.name.errors }}
+            </div>
+            {% if form.name.help_text %}
+                <small id="passwordHelpBlock"
+                       class="form-text text-muted">{{ form.name.help_text|safe }}</small>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{ form.preferred_name.label_tag }}
+            {% styled_field form.preferred_name class="form-control" placeholder="E.g. John" error_class="is-invalid" %}
+            <div class="invalid-feedback">
+                {{ form.preferred_name.errors }}
+            </div>
+            {% if form.preferred_name.help_text %}
+                <small id="passwordHelpBlock"
+                       class="form-text text-muted">{{ form.preferred_name.help_text|safe }}</small>
+            {% endif %}
+        </div>
+        <input type="submit" class="btn btn-primary" value="Create Account">
+    </form>
+{% endblock %}

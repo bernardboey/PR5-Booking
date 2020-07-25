@@ -1,0 +1,45 @@
+{% extends "registration/login_layout.html" %}
+{% load static %}
+
+{% block title %}
+    Login
+{% endblock %}
+
+{% block content %}
+    <div class="text-center mb-3">
+        <img src="{% static "favicon.png" %}" alt="PR5 Logo" width="100px">
+    </div>
+    <h1 class="mb-4">Login</h1>
+    {% if form.errors %}
+        <div class="alert alert-danger px-3 py-2" role="alert">
+            You entered a wrong email/password. Please try again.
+        </div>
+    {% endif %}
+
+    {% if next %}
+        {% if user.is_authenticated %}
+            <p>Your account doesn't have access to this page. To proceed,
+            please login with an account that has access.</p>
+        {% else %}
+            <p>Please login to see this page.</p>
+        {% endif %}
+    {% endif %}
+
+    <form method="post" class="mb-3" action="{% url 'login' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.username.label_tag }}
+            {% styled_field form.username class="form-control" placeholder="Email address" %}
+        </div>
+        <div class="form-group">
+            {{ form.password.label_tag }}
+            {% styled_field form.password class="form-control" placeholder="Password" %}
+        </div>
+        <input type="submit" class="btn btn-primary" value="Login">
+        <input type="hidden" name="next" value="{{ next }}">
+    </form>
+
+    {# Assumes you setup the password_reset view in your URLconf #}
+    <p><a href="{% url 'password_reset' %}">Forgot your password?</a><br>
+    <a href="{% url 'password_reset' %}">Don't have an account?</a></p>
+{% endblock %}

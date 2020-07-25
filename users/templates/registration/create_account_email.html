@@ -1,0 +1,14 @@
+{% load i18n %}{% autoescape off %}
+    <p>{% blocktrans %}Hello {% endblocktrans %}{{ user.name }}!</p>
+
+    <p>{% blocktrans %}You're receiving this email because an account has been created for you at {{ site_name }}
+        .{% endblocktrans %}</p>
+
+    <p><a href="
+
+            {% block reset_link %}{{ protocol }}://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}{% endblock %}">Click
+        here</a> to set a password before you can start using your account.</p>
+
+    <p>{% blocktrans %}Thank you!{% endblocktrans %}</p>
+
+{% endautoescape %}

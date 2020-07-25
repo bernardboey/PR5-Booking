@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Make a Booking{% endblock %}
+{% block body %}
+    <h2>Make a Booking</h2>
+    <div class="row">
+        <form method="post" class="mb-3 col-xl-6 col-lg-7 col-md-9 col-12">{% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+            {% include "form-group.html" with field=form.booking_date only %}
+            {% include "form-group.html" with layout_class="form-row" field1=form.start_time field1_class="col-6" field2=form.end_time field2_class="col-6" only %}
+            {% include "form-group.html" with field=form.purpose placeholder="E.g. Band Practice" only %}
+            {% include "form-group.html" with field=form.group_name placeholder="E.g. Five Directions" only %}
+            {% include "form-group.html" with field=form.comments placeholder="E.g. Practising for Tape Days" only %}
+            {% include "form-group.html" with field=form.number_of_yale_nus_users only %}
+            {% include "form-group.html" with field=form.number_of_external_users only %}
+            <div class="form-group">
+                {% styled_checkbox form.equipment_used error_class="is-invalid" %}
+                {{ form.equipment_used.label_tag }}
+                {% for checkbox in form.equipment_used %}
+                    <div class="custom-control custom-checkbox">
+                        {{ checkbox.tag }}
+                        <label class="custom-control-label" for="{{ checkbox.id_for_label }}">
+                            {{ checkbox.choice_label }}
+                        </label>
+                    </div>
+                {% endfor %}
+                <div class="invalid-feedback d-block">
+                    {{ form.equipment_used.errors }}
+                </div>
+                {% if form.equipment_used.help_text %}
+                    <small id="passwordHelpBlock"
+                           class="form-text text-muted">{{ form.equipment_used.help_text|safe }}</small>
+                {% endif %}
+            </div>
+            <input type="submit" class="btn btn-primary" value="Submit">
+        </form>
+    </div>
+{% endblock body %}

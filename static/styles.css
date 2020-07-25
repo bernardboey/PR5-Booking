@@ -1,0 +1,22 @@
+body, html {
+    height: 100%;
+}
+body {
+    padding-top: 56px;
+}
+.bg-grey {
+    background-color: lightgray!important;
+}
+.errorlist {
+    list-style: none;
+    padding-inline-start: 0;
+    margin-bottom: 0;
+}
+label.required:after {
+    content: "*";
+    color: red;
+}
+/*
+label.required {
+    font-weight:bold;
+}*/

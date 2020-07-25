@@ -1,0 +1,23 @@
+{% extends "registration/password_reset_layout.html" %}
+{% load static %}
+
+{% block title %}
+    Account Created
+{% endblock %}
+
+<!-- Don't show navbar by overriding ths block -->
+{% block navbar %}
+{% endblock %}
+
+{% block content %}
+    <div class="text-center mb-3">
+        <img src="{% static "favicon.png" %}" alt="PR5 Logo" width="100px">
+    </div>
+    <h1 class="mb-4">Account Created</h1>
+    <p>All done! We’ve emailed you instructions for setting your password. You should receive them shortly. Please check your spam
+        folder if you cannot find the email.</p>
+    <div class="mt-4">
+        <p class="mb-1">For the next user:</p>
+        <a class="btn btn-primary" href="{% url "create_account" %}" role="button">Create another account</a>
+    </div>
+{% endblock %}
