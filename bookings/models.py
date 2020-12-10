@@ -3,6 +3,7 @@ from django.contrib.postgres import fields
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
+from django.utils.functional import cached_property
 
 
 class Booking(models.Model):
@@ -33,13 +34,35 @@ class Booking(models.Model):
 
     EQUIPMENT = (mixer, microphones, drums, keyboard, bass_amp, acoustic_guitar_amp, electric_guitar_amps)
 
-    @property
+    @cached_property
     def equipment_used(self):
         return ", ".join([equipment.verbose_name for equipment in Booking.EQUIPMENT if getattr(self, equipment.name)])
 
+    @cached_property
+    def status(self):
+        if self.approved:
+            return "Approved"
+        elif self.rejected:
+            return "Rejected"
+        else:
+            return "Pending"
+
+    @cached_property
+    def approval(self):
+        try:
+            return self.approvals.latest("timestamp")
+        except Approval.DoesNotExist:
+            return None
+
+    @cached_property
     def approved(self):
-        # if no approval, say no
-        return self.approvals.latest("timestamp")
+        if approval := self.approval:
+            return approval.approved
+
+    @cached_property
+    def rejected(self):
+        if approval := self.approval:
+            return not approval.approved
 
     def clean(self, *args, **kwargs):
         if self.end_time <= self.start_time:
@@ -50,14 +73,10 @@ class Booking(models.Model):
 
 
 class Approval(models.Model):
-    class Status(models.IntegerChoices):
-        APPROVED = 1
-        PENDING = 0
-        REJECTED = -1
     timestamp = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name="approvals", null=True)
     comments_for_user = models.CharField(max_length=200, blank=True)  # "Auto-approved" if booking by an admin
     comments_for_admin = models.CharField(max_length=200, blank=True)  # "Auto-approved" if booking by an admin
     admin = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True, related_name="bookings_reviewed")
-    status = models.IntegerField(choices=Status.choices)
+    approved = models.BooleanField()

@@ -1,0 +1,10 @@
+{% extends "bookings/admin_bookings_layout.html" %}
+{% block title %}Approved Bookings{% endblock %}
+{% block content %}
+    <h2>All Approved Bookings</h2>
+    {% if approved_bookings %}
+        {% include "bookings/bookings_layout.html" with bookings=approved_bookings reject_btn=True form=approval_form %}
+    {% else %}
+        No bookings to display.
+    {% endif %}
+{% endblock content %}

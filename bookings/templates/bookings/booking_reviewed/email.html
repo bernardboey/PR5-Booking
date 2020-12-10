@@ -1,0 +1,15 @@
+<p>The following PR5 Booking has been <b>{{ booking.status.lower }}</b>:</p>
+
+<h6>{{ booking.booking_date }}</h6>
+<h6>{{ booking.start_time }} to {{ booking.end_time }}</h6>
+<p>Booked by {{ booking.user.name }} on {{ booking.timestamp }}</p>
+<p>Purpose: {{ booking.purpose }}<br>
+    Group Name: {{ booking.group_name }}<br>
+    Comments: {{ booking.comments }}<br>
+    No. of Yale-NUS Users: {{ booking.number_of_yale_nus_users }}<br>
+    No. of External Users: {{ booking.number_of_external_users }}<br>
+    Equipment Used: {{ booking.equipment_used }}
+</p>
+<p>
+    Comments by Admin: {{ booking.approval.comments_for_user }}
+</p>

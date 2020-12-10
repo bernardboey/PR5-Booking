@@ -1,12 +1,5 @@
 {% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
 {% block body %}
-    Hi {{ user.name }}! Here are all the bookings:
-    {% for booking in bookings %}
-        {{ booking.timestamp }}
-        {{ booking.booking_date }}
-        {{ booking.start_time }}
-        {{ booking.end_time }}
-        {{ booking.purpose }}
-        {{ booking.approved }}
-    {% endfor %}
+    Hi {{ user.name }}!
 {% endblock body %}

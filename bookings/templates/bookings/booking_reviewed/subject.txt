@@ -1,0 +1,1 @@
+PR5 Booking on {{ booking.booking_date }} {{ booking.status }}

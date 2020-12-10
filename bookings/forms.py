@@ -45,3 +45,21 @@ class BookingForm(forms.ModelForm):
         equipment_used = self["equipment_used"].value() or []
         for equipment in equipment_used:
             setattr(self.instance, equipment, True)
+
+
+class ApprovalForm(forms.ModelForm):
+    required_css_class = "required"
+
+    class Meta:
+        model = models.Approval
+        fields = ("comments_for_user", "comments_for_admin")
+
+    def __init__(self, *args, approved=None, admin=None, booking=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.label_suffix = ""
+        if approved is not None:
+            self.instance.approved = approved
+        if admin is not None:
+            self.instance.admin = admin
+        if booking is not None:
+            self.instance.booking = booking
