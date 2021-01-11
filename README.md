@@ -46,10 +46,16 @@ This means that emails will be displayed in the console instead.
 
 1. Download the distribution code
 2. In your terminal, cd into the pr5-booking directory.
-3. Run python manage.py makemigrations bookings to make migrations for the bookings app. 
-4. Run python manage.py makemigrations users to make migrations for the users app.
-5. Run python manage.py migrate to apply migrations to your database.
-6. Run python manage.py runserver to begin the website.
-7. Login as superuser and create a member account via `[domain]/accounts/create/`. 
+3. Run `python manage.py makemigrations` bookings to make migrations for the bookings app. 
+4. Run `python manage.py makemigrations` users to make migrations for the users app.
+5. Run `python manage.py migrate` to apply migrations to your database.
+6. Run `python manage.py createsuperuser` to create a superuser.
+7. Run `python manage.py runserver` to begin the website.
+8. Login as superuser and create a member account via `[domain]/accounts/create/`. 
    The password set link will be sent via email (but in this case displayed in the console)
-8. You now have a member account and admin account to test with.
+9. You now have a member account and admin account to test with.
+
+## Notes
+
+For the screen recording, I decided to use the SMTP Email Backend so that the email functionality can be demonstrated.
+This differs from the distribution code here.
