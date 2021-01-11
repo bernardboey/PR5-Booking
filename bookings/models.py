@@ -10,7 +10,7 @@ from datetime import datetime
 
 
 class Booking(models.Model):
-    MAX_YALE_NUS_USERS = 3
+    MAX_YALE_NUS_USERS = 5
     MAX_EXTERNAL_USERS = 0
 
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -84,19 +84,19 @@ class Booking(models.Model):
         if self.end_time <= self.start_time:
             raise ValidationError({"end_time": ["End Time must be later than Start Time"]})
         clashed_bookings = Booking.objects.filter(booking_date=self.booking_date).filter(end_time__gt=self.start_time).filter(start_time__lt=self.end_time)
-        clashed_bookings = [booking for booking in clashed_bookings if booking.approved or (booking.pending and booking.is_upcoming)]
+        clashed_bookings = [booking for booking in clashed_bookings if (booking.approved or (booking.pending and booking.is_upcoming)) and booking.pk != self.pk]
         if clashed_bookings:
             raise ValidationError("Selected date and time clashes with existing booking")
         if not (self.mixer or self.drums or self.keyboard or self.microphones
                 or self.bass_amp or self.acoustic_guitar_amp or self.electric_guitar_amps):
             raise ValidationError({"equipment_used": ["Please select at least one."]})
 
-    def serialize(self):
+    def serialize(self, user):
         return {
-            "title": ("[Pending] " if self.pending else "") + self.user.name,
+            "title": ("[Pending] " if self.pending else "") + self.user.name + f" ({self.purpose})",
             "start": self.booking_date.strftime("%Y-%m-%d") + self.start_time.strftime("T%H:%M:%S"),
             "end": self.booking_date.strftime("%Y-%m-%d") + self.end_time.strftime("T%H:%M:%S"),
-            "color": "#ffe859" if self.pending else "#3788d8",
+            "color": ("#ff9e60" if self.user == user else "#ffe859") if self.pending else ("#28a745" if self.user == user else "#3788d8"),
             "textColor": "#000000" if self.pending else "#FFFFFF"
         }
 

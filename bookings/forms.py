@@ -36,6 +36,9 @@ class BookingForm(forms.ModelForm):
             "start_time": forms.TimeInput(attrs={"type": "time"}),
             "end_time": forms.TimeInput(attrs={"type": "time"}),
         }
+        help_texts = {
+            "number_of_external_users": "External users are currently not allowed"
+        }
 
     def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)

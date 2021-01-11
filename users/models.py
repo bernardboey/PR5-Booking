@@ -5,12 +5,13 @@ from django.core.mail import send_mail
 from django.utils import timezone
 from django.contrib.auth.models import PermissionsMixin
 
+# Code adapted from Django modules (django.contrib.auth.models)
+
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         """
-        Creates and saves a User with the given email, date of
-        birth and password.
+        Creates and saves a User with the given email and password.
         """
         if not email:
             raise ValueError('Users must have an email address')
@@ -23,8 +24,7 @@ class UserManager(BaseUserManager):
 
     def create_superuser(self, email, password=None, **extra_fields):
         """
-        Creates and saves a superuser with the given email, date of
-        birth and password.
+        Creates and saves a superuser with the given email and password.
         """
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)

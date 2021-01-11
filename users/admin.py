@@ -7,6 +7,8 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
 from .models import User
 
+# Code adapted from Django modules (django.contrib.auth.forms)
+
 
 class UserCreationForm(forms.ModelForm):
     """

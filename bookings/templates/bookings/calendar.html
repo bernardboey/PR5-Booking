@@ -21,36 +21,44 @@
                 nowIndicator: true,
                 allDaySlot: false,
                 events: '{% url "get-bookings" %}',
+                selectAllow: function(arg) {
+                    return !(arg.start.getDate() !== arg.end.getDate() && arg.end.getHours() !== 0);
+                },
                 select: function (arg) {
-                    if (arg.start.getDate() !== arg.end.getDate()) {
-                        $('#different-day-error-modal').modal()
-                    } else {
-                        $('#date-selected-modal').modal()
-                        document.querySelector("#booking-date").innerHTML = FullCalendar.formatDate(arg.start, {
-                            month: 'short',
-                            year: 'numeric',
-                            day: '2-digit',
-                        });
-                        const start_time = FullCalendar.formatDate(arg.start, {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            hour12: false,
-                        });
-                        const end_time = FullCalendar.formatDate(arg.end, {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            hour12: false,
-                        });
-                        document.querySelector("#booking-start-time").innerHTML = `Start: ${start_time}`;
-                        document.querySelector("#booking-end-time").innerHTML = `End: ${end_time}`;
-                        document.querySelector("#input-date").value = FullCalendar.formatDate(arg.start, {
-                            month: '2-digit',
-                            year: 'numeric',
-                            day: '2-digit',
-                        }); // mm/dd/yyyy
-                        document.querySelector("#input-start-time").value = start_time; // HH:MM
-                        document.querySelector("#input-end-time").value = end_time; // HH:MM
+                    $('#date-selected-modal').modal()
+                    document.querySelector("#booking-date").innerHTML = FullCalendar.formatDate(arg.start, {
+                        month: 'short',
+                        year: 'numeric',
+                        day: '2-digit',
+                    });
+                    let start_time = FullCalendar.formatDate(arg.start, {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false,
+                    });
+                    let end_time = FullCalendar.formatDate(arg.end, {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false,
+                    });
+                    if (start_time.slice(0, 2) === "24") {
+                        start_time = "00" + start_time.slice(2, 5)
                     }
+                    if (end_time === "24:00") {
+                        end_time = "23:59"
+                    }
+                    if (end_time.slice(0, 2) === "24") {
+                        end_time = "00" + end_time.slice(2, 5)
+                    }
+                    document.querySelector("#booking-start-time").innerHTML = `Start: ${start_time}`;
+                    document.querySelector("#booking-end-time").innerHTML = `End: ${end_time}`;
+                    document.querySelector("#input-date").value = FullCalendar.formatDate(arg.start, {
+                        month: '2-digit',
+                        year: 'numeric',
+                        day: '2-digit',
+                    }); // mm/dd/yyyy
+                    document.querySelector("#input-start-time").value = start_time; // HH:MM
+                    document.querySelector("#input-end-time").value = end_time; // HH:MM
                     calendar.unselect()
                 },
             });
@@ -60,7 +68,18 @@
     </script>
 {% endblock %}
 {% block body %}
-    <h1>PR5 Calendar</h1>
+    <h1 class="mb-3">PR5 Calendar</h1>
+    {% if user.is_authenticated %}
+        <h5 class="mb-0">Click and drag to make a booking!</h5>
+        <p>Note that your booking MUST start and end within the same day. You also cannot book a slot that is pending or already confirmed.</p>
+        <h6>Legend:</h6>
+        <p>
+            <span class="badge text-white p-3 mb-1" style="background-color: #3788d8">Approved Booking</span>
+            <span class="badge text-white p-3 mb-1" style="background-color: #28a745">Approved Booking (Yours)</span>
+            <span class="badge p-3 mb-1" style="background-color: #ffe859">Pending Booking</span>
+            <span class="badge p-3 mb-1" style="background-color: #ff9e60">Pending Booking (Yours)</span>
+        </p>
+    {% endif %}
     <div id='calendar'></div>
 
     <div class="modal fade" id="different-day-error-modal" tabindex="-1" role="dialog"
@@ -75,7 +94,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p>Booking must be within the same day. Please select again.</p>
+                    <p>Booking must start and end on the same day. Please select again.</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

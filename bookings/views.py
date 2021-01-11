@@ -57,7 +57,7 @@ def get_bookings(request):
     elif end:
         bookings = bookings.filter(booking_date__lte=end)
 
-    return JsonResponse([_booking.serialize()
+    return JsonResponse([_booking.serialize(request.user)
                          for _booking in bookings
                          if _booking.approved or (_booking.pending and _booking.is_upcoming)], safe=False)
 
@@ -69,7 +69,7 @@ def my_upcoming_bookings(request):
         if "cancel" in request.POST:
             models.Booking.objects.get(id=request.POST.get("booking_id")).delete()
         return HttpResponseRedirect(reverse("my-upcoming-bookings"))
-    return render(request, "bookings/my_upcoming_bookings.html", {
+    return render(request, "bookings/user_bookings/my_upcoming_bookings.html", {
         "upcoming_bookings": [_booking for _booking in bookings if _booking.approved and _booking.is_upcoming]
     })
 
@@ -81,7 +81,7 @@ def my_pending_bookings(request):
         if "cancel" in request.POST:
             models.Booking.objects.get(id=request.POST.get("booking_id")).delete()
         return HttpResponseRedirect(reverse("my-pending-bookings"))
-    return render(request, "bookings/my_pending_bookings.html", {
+    return render(request, "bookings/user_bookings/my_pending_bookings.html", {
         "pending_bookings": [_booking for _booking in bookings if _booking.pending and _booking.is_upcoming]
     })
 
@@ -89,7 +89,7 @@ def my_pending_bookings(request):
 @login_required
 def my_rejected_bookings(request):
     bookings = models.Booking.objects.filter(user=request.user).filter(booking_date__gte=datetime.now().date()).order_by("booking_date", "start_time")
-    return render(request, "bookings/my_rejected_bookings.html", {
+    return render(request, "bookings/user_bookings/my_rejected_bookings.html", {
         "rejected_bookings": [_booking for _booking in bookings if _booking.rejected and _booking.is_upcoming]
     })
 
@@ -97,7 +97,7 @@ def my_rejected_bookings(request):
 @login_required
 def my_past_bookings(request):
     bookings = models.Booking.objects.filter(user=request.user).filter(booking_date__lte=datetime.now().date()).order_by("-booking_date", "-start_time")
-    return render(request, "bookings/my_past_bookings.html", {
+    return render(request, "bookings/user_bookings/my_past_bookings.html", {
         "past_bookings": [_booking for _booking in bookings if _booking.is_past]
     })
 
@@ -118,7 +118,7 @@ def unapproved_bookings(request):
             subject = render_to_string('bookings/booking_reviewed/subject.txt', {'booking': booking_obj})
             send_mail(subject, body_text, None, [booking_obj.user.email], html_message=body_html)
             return HttpResponseRedirect(reverse("unapproved-bookings"))
-    return render(request, "bookings/unapproved_bookings.html", {
+    return render(request, "bookings/all_bookings/unapproved_bookings.html", {
         "unapproved_bookings": [_booking for _booking in bookings if _booking.pending and _booking.is_upcoming],
         "approval_form": approval_form
     })
@@ -135,7 +135,7 @@ def approved_bookings(request):
         if approval_form.is_valid():
             approval_form.save()
             return HttpResponseRedirect(reverse("approved-bookings"))
-    return render(request, "bookings/approved_bookings.html", {
+    return render(request, "bookings/all_bookings/approved_bookings.html", {
         "approved_bookings": [_booking for _booking in bookings if _booking.approved and _booking.is_upcoming],
         "approval_form": approval_form
     })
@@ -152,7 +152,7 @@ def rejected_bookings(request):
         if approval_form.is_valid():
             approval_form.save()
             return HttpResponseRedirect(reverse("rejected-bookings"))
-    return render(request, "bookings/rejected_bookings.html", {
+    return render(request, "bookings/all_bookings/rejected_bookings.html", {
         "rejected_bookings": [_booking for _booking in bookings if _booking.rejected and _booking.is_upcoming],
         "approval_form": approval_form
     })
@@ -161,7 +161,7 @@ def rejected_bookings(request):
 @staff_member_required
 def past_bookings(request):
     bookings = models.Booking.objects.all().filter(booking_date__lte=datetime.now().date()).order_by("-booking_date", "-start_time")
-    return render(request, "bookings/past_bookings.html", {
+    return render(request, "bookings/all_bookings/past_bookings.html", {
         "past_bookings": [_booking for _booking in bookings if _booking.is_past]
     })
 
