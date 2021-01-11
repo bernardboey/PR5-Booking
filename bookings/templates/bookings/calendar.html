@@ -13,7 +13,9 @@
             const calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'timeGridWeek',
                 firstDay: 1,
+                {% if user.is_authenticated %}
                 selectable: true,
+                {% endif %}
                 selectMirror: true,
                 selectOverlap: false,
                 nowIndicator: true,
