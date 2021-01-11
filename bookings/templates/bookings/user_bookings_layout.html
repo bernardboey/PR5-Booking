@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-lg-3 col-md-4 pr-md-5 col-6 pb-4 order-md-12">
+            <h2>Bookings</h2>
+            <div class="list-group">
+                <a href="{% url "my-upcoming-bookings" %}"
+                   class="list-group-item px-3 py-2 {% if request.resolver_match.url_name == "my-upcoming-bookings" %}active{% endif %}">Upcoming</a>
+                <a href="{% url "my-pending-bookings" %}"
+                   class="list-group-item px-3 py-2 {% if request.resolver_match.url_name == "my-pending-bookings" %}active{% endif %}">Pending</a>
+                <a href="{% url "my-rejected-bookings" %}"
+                   class="list-group-item px-3 py-2 {% if request.resolver_match.url_name == "my-rejected-bookings" %}active{% endif %}">Rejected</a>
+                <a href="{% url "my-past-bookings" %}"
+                   class="list-group-item px-3 py-2 {% if request.resolver_match.url_name == "my-past-bookings" %}active{% endif %}">Past</a>
+            </div>
+        </div>
+        <div class="col-lg-9 col-md-8 col-12 order-md-1">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}

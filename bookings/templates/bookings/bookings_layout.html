@@ -4,7 +4,15 @@
             <div class="col-12 col-md-8">
                 <h6>{{ booking.booking_date }}</h6>
                 <h6>{{ booking.start_time }} to {{ booking.end_time }}</h6>
-                <p>Booked by {{ booking.user.name }} on {{ booking.timestamp }}</p>
+                <p>Booked by
+                    {% if user.is_staff and admin_view %}
+                        <a href="{% url "profile" pk=booking.user.pk %}">
+                    {% endif %}
+                    {{ booking.user.name }}
+                    {% if user.is_staff %}
+                        </a>
+                    {% endif %}
+                    on {{ booking.timestamp }}</p>
                 <p class="m-0">Purpose: {{ booking.purpose }}<br>
                     Group Name: {{ booking.group_name }}<br>
                     Comments: {{ booking.comments }}<br>
@@ -15,13 +23,19 @@
                 {% if booking.approved or booking.rejected %}
                     <p class="mt-2 mb-0">
                         {% if booking.approved %}Approved{% endif %}{% if booking.rejected %}Rejected{% endif %}
-                        by {{ booking.approval.admin.name }} on {{ booking.approval.timestamp }}<br>
-                        Comments for User: {{ booking.approval.comments_for_user }}<br>
-                        Comments for Admin: {{ booking.approval.comments_for_admin }}<br>
+                        by {{ booking.approval.admin.preferred_name }} on {{ booking.approval.timestamp }}<br>
+                        {% if admin_view %}
+                            Comments for User: {{ booking.approval.comments_for_user }}<br>
+                            Comments for Admin: {{ booking.approval.comments_for_admin }}<br>
+                        {% else %}
+                            {% if booking.approval.comments_for_user %}
+                                Comments by Admin: {{ booking.approval.comments_for_user }}<br>
+                            {% endif %}
+                        {% endif %}
                     </p>
                 {% endif %}
             </div>
-            {% if approve_btn or reject_btn %}
+            {% if approve_btn or reject_btn or cancel_btn %}
                 <div class="col-12 col-md-4 text-left text-md-right align-self-end mt-2 mt-md-0">
                     <div class="row no-gutters">
                         {% if approve_btn %}
@@ -30,6 +44,7 @@
                                         data-booking_date="{{ booking.booking_date }}"
                                         data-start_time="{{ booking.start_time }}"
                                         data-end_time="{{ booking.end_time }}" data-name="{{ booking.user.name }}"
+                                        data-user_id="{{ booking.user.id }}"
                                         data-booking_id="{{ booking.id }}"
                                         data-admin="{{ booking.approval.admin.name }}"
                                         data-approval_timestamp="{{ booking.approval.timestamp }}">Approve
@@ -42,9 +57,20 @@
                                         data-booking_date="{{ booking.booking_date }}"
                                         data-start_time="{{ booking.start_time }}"
                                         data-end_time="{{ booking.end_time }}" data-name="{{ booking.user.name }}"
+                                        data-user_id="{{ booking.user.id }}"
                                         data-booking_id="{{ booking.id }}"
                                         data-admin="{{ booking.approval.admin.name }}"
                                         data-approval_timestamp="{{ booking.approval.timestamp }}">Reject
+                                </button>
+                            </div>
+                        {% endif %}
+                        {% if cancel_btn %}
+                            <div class="col-auto col-md-12">
+                                <button class="btn btn-danger" data-toggle="modal" data-target="#cancel-modal"
+                                        data-booking_date="{{ booking.booking_date }}"
+                                        data-start_time="{{ booking.start_time }}"
+                                        data-end_time="{{ booking.end_time }}"
+                                        data-booking_id="{{ booking.id }}">Cancel
                                 </button>
                             </div>
                         {% endif %}
@@ -73,7 +99,7 @@
                 </div>
                 <div class="modal-footer">
                     <div class="container p-0">
-                        <form method="post">{% csrf_token %}
+                        <form id="approve-form" method="post">{% csrf_token %}
                             {% if form.non_field_errors %}
                                 <div class="alert alert-danger">
                                     {{ form.non_field_errors }}
@@ -82,9 +108,14 @@
                             {% include "form-group.html" with field=form.comments_for_user only %}
                             {% include "form-group.html" with field=form.comments_for_admin only %}
                             <input type="hidden" id="booking-id" name="booking_id">
+                            <input type="hidden" name="approve" value="Approve">
                             <div class="text-right">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <input type="submit" class="btn btn-success" name="approve" value="Approve">
+                                <button type="submit" id="approve-button" class="btn btn-success">
+                                    <span id="approve-spinner" class="spinner-border spinner-border-sm"
+                                          style="display: none" role="status" aria-hidden="true"></span>
+                                    Approve
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -100,18 +131,23 @@
                 const start_time = button.data('start_time')
                 const end_time = button.data('end_time')
                 const name = button.data('name')
+                const user_id = button.data('user_id')
                 const booking_id = button.data('booking_id')
                 const admin = button.data('admin')
                 const approval_timestamp = button.data('approval_timestamp')
                 const modal = $(this)
-                let booking_details_html = `<h6>${booking_date}<br>${start_time} to ${end_time}</h6><p>By ${name}</p>`
-                if(admin && approval_timestamp) {
+                let booking_details_html = `<h6>${booking_date}<br>${start_time} to ${end_time}</h6><p>By <a href="/accounts/users/${user_id}">${name}</a></p>`
+                if (admin && approval_timestamp) {
                     booking_details_html += `<p><b>Booking was previously rejected</> by ${admin} on ${approval_timestamp}</p>`
                 }
                 modal.find('#booking-details').html(booking_details_html)
                 modal.find('#booking-id').val(booking_id)
             })
         });
+        document.querySelector("#approve-form").onsubmit = function () {
+            document.querySelector("#approve-button").disabled = true;
+            document.querySelector("#approve-spinner").style.display = "inherit";
+        };
     </script>
 {% endif %}
 {% if reject_btn %}
@@ -121,7 +157,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="reject-modal-label">Approve Booking</h5>
+                    <h5 class="modal-title" id="reject-modal-label">Reject Booking</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -133,7 +169,7 @@
                 </div>
                 <div class="modal-footer">
                     <div class="container p-0">
-                        <form method="post">{% csrf_token %}
+                        <form id="reject-form" method="post">{% csrf_token %}
                             {% if form.non_field_errors %}
                                 <div class="alert alert-danger">
                                     {{ form.non_field_errors }}
@@ -142,9 +178,14 @@
                             {% include "form-group.html" with field=form.comments_for_user only %}
                             {% include "form-group.html" with field=form.comments_for_admin only %}
                             <input type="hidden" id="booking-id" name="booking_id">
+                            <input type="hidden" name="reject" value="Reject">
                             <div class="text-right">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <input type="submit" class="btn btn-danger" name="reject" value="Reject">
+                                <button type="submit" id="reject-button" class="btn btn-danger">
+                                    <span id="reject-spinner" class="spinner-border spinner-border-sm"
+                                          style="display: none" role="status" aria-hidden="true"></span>
+                                    Reject
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -160,14 +201,74 @@
                 const start_time = button.data('start_time')
                 const end_time = button.data('end_time')
                 const name = button.data('name')
+                const user_id = button.data('user_id')
                 const booking_id = button.data('booking_id')
                 const admin = button.data('admin')
                 const approval_timestamp = button.data('approval_timestamp')
                 const modal = $(this)
-                let booking_details_html = `<h6>${booking_date}<br>${start_time} to ${end_time}</h6><p>By ${name}</p>`
-                if(admin && approval_timestamp) {
+                let booking_details_html = `<h6>${booking_date}<br>${start_time} to ${end_time}</h6><p>By <a href="/accounts/users/${user_id}">${name}</a></p>`
+                if (admin && approval_timestamp) {
                     booking_details_html += `<p><b>Booking was previously approved</b> by ${admin} on ${approval_timestamp}</p>`
                 }
+                modal.find('#booking-details').html(booking_details_html)
+                modal.find('#booking-id').val(booking_id)
+                console.log("Hello")
+                console.log(booking_id)
+            })
+        });
+        document.querySelector("#reject-form").onsubmit = function () {
+            document.querySelector("#reject-button").disabled = true;
+            document.querySelector("#reject-spinner").style.display = "inherit";
+        };
+    </script>
+{% endif %}
+{% if cancel_btn %}
+    <!-- Modal -->
+    <div class="modal fade" id="cancel-modal" data-backdrop="static" data-keyboard="false" tabindex="-1"
+         aria-labelledby="cancel-modal-label" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cancel-modal-label">Cancel Booking</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to cancel the following booking?</p>
+                    <div id="booking-details">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="container p-0">
+                        <form method="post">{% csrf_token %}
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger">
+                                    {{ form.non_field_errors }}
+                                </div>
+                            {% endif %}
+                            <input type="hidden" id="booking-id" name="booking_id">
+                            <input type="hidden" name="cancel" value="Cancel">
+                            <div class="text-right">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-danger">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            $('#cancel-modal').on('show.bs.modal', function (event) {
+                const button = $(event.relatedTarget) // Button that triggered the modal
+                const booking_date = button.data('booking_date')
+                const start_time = button.data('start_time')
+                const end_time = button.data('end_time')
+                const booking_id = button.data('booking_id')
+                const modal = $(this)
+                let booking_details_html = `<h6>${booking_date}<br>${start_time} to ${end_time}</h6>`
                 modal.find('#booking-details').html(booking_details_html)
                 modal.find('#booking-id').val(booking_id)
             })

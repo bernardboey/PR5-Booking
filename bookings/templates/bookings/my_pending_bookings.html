@@ -1,0 +1,10 @@
+{% extends "bookings/user_bookings_layout.html" %}
+{% block title %}My Pending Bookings{% endblock %}
+{% block content %}
+    <h2>My Pending Bookings</h2>
+    {% if pending_bookings %}
+        {% include "bookings/bookings_layout.html" with bookings=pending_bookings cancel_btn=True %}
+    {% else %}
+        No bookings to display.
+    {% endif %}
+{% endblock content %}

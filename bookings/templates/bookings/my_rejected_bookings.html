@@ -1,0 +1,10 @@
+{% extends "bookings/user_bookings_layout.html" %}
+{% block title %}My Rejected Bookings{% endblock %}
+{% block content %}
+    <h2>My Rejected Bookings</h2>
+    {% if rejected_bookings %}
+        {% include "bookings/bookings_layout.html" with bookings=rejected_bookings %}
+    {% else %}
+        No bookings to display.
+    {% endif %}
+{% endblock content %}

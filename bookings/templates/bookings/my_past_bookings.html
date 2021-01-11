@@ -1,0 +1,10 @@
+{% extends "bookings/user_bookings_layout.html" %}
+{% block title %}My Past Bookings{% endblock %}
+{% block content %}
+    <h2>My Past Bookings</h2>
+    {% if past_bookings %}
+        {% include "bookings/bookings_layout.html" with bookings=past_bookings %}
+    {% else %}
+        No bookings to display.
+    {% endif %}
+{% endblock content %}

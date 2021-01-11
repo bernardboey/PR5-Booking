@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ user_obj.preferred_name }} - Profile
+{% endblock %}
+
+
+{% block body %}
+    <div class="row">
+        <div class="col-lg-9 col-md-8 col-12 pb-2">
+            <h1 class="mb-4">{{ user_obj.name }}</h1>
+            <h5>{% if user_obj.is_staff %}Admin{% else %}Member{% endif %}</h5>
+            <h5 class="mb-3">Email: {{ user_obj.email }}</h5>
+            <h4 class="mb-3 mt-4">Booking Stats</h4>
+            <p>Number of bookings made: {{ num_bookings }}</p>
+            <p>Number of approved bookings: {{ num_approved_bookings }}</p>
+            <p>Number of rejected bookings: {{ num_rejected_bookings }}</p>
+            {% if user_obj.is_staff %}
+                <h4 class="mb-3 mt-4">Approval Stats</h4>
+                <p>Number of bookings approved: {{ num_bookings_approved }}</p>
+                <p>Number of bookings rejected: {{ num_bookings_rejected }}</p>
+            {% endif %}
+            <h4 class="mb-3 mt-4">All Bookings</h4>
+            {% if bookings %}
+                {% include "bookings/bookings_layout.html" with bookings=bookings %}
+            {% else %}
+                No bookings to display.
+            {% endif %}
+        </div>
+        <div class="col-lg-3 col-md-4 pr-md-5 col-6 pb-4">
+            <h2>{{ user_obj.preferred_name }}</h2>
+            <div class="list-group">
+                <a href="{% url "my_profile" %}"
+                   class="list-group-item px-3 py-2 {% if request.resolver_match.url_name == "profile" %}active{% endif %}">Profile</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

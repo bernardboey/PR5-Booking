@@ -1,0 +1,10 @@
+{% extends "bookings/user_bookings_layout.html" %}
+{% block title %}My Upcoming Bookings{% endblock %}
+{% block content %}
+    <h2>My Upcoming Bookings</h2>
+    {% if upcoming_bookings %}
+        {% include "bookings/bookings_layout.html" with bookings=upcoming_bookings cancel_btn=True %}
+    {% else %}
+        No bookings to display.
+    {% endif %}
+{% endblock content %}

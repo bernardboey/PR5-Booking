@@ -1,9 +1,12 @@
 from django.db import models
 from django.contrib.postgres import fields
+from django.db.models import Q
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
 from django.utils.functional import cached_property
+
+from datetime import datetime
 
 
 class Booking(models.Model):
@@ -64,12 +67,38 @@ class Booking(models.Model):
         if approval := self.approval:
             return not approval.approved
 
+    @cached_property
+    def pending(self):
+        return self.approval is None
+
+    @cached_property
+    def is_upcoming(self):
+        today = datetime.now().date()
+        return self.booking_date > today or self.booking_date == today and self.end_time >= datetime.now().time()
+
+    @cached_property
+    def is_past(self):
+        return not self.is_upcoming
+
     def clean(self, *args, **kwargs):
         if self.end_time <= self.start_time:
             raise ValidationError({"end_time": ["End Time must be later than Start Time"]})
+        clashed_bookings = Booking.objects.filter(booking_date=self.booking_date).filter(end_time__gt=self.start_time).filter(start_time__lt=self.end_time)
+        clashed_bookings = [booking for booking in clashed_bookings if booking.approved or (booking.pending and booking.is_upcoming)]
+        if clashed_bookings:
+            raise ValidationError("Selected date and time clashes with existing booking")
         if not (self.mixer or self.drums or self.keyboard or self.microphones
                 or self.bass_amp or self.acoustic_guitar_amp or self.electric_guitar_amps):
             raise ValidationError({"equipment_used": ["Please select at least one."]})
+
+    def serialize(self):
+        return {
+            "title": ("[Pending] " if self.pending else "") + self.user.name,
+            "start": self.booking_date.strftime("%Y-%m-%d") + self.start_time.strftime("T%H:%M:%S"),
+            "end": self.booking_date.strftime("%Y-%m-%d") + self.end_time.strftime("T%H:%M:%S"),
+            "color": "#ffe859" if self.pending else "#3788d8",
+            "textColor": "#000000" if self.pending else "#FFFFFF"
+        }
 
 
 class Approval(models.Model):

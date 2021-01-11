@@ -1,5 +1,52 @@
 {% extends "base.html" %}
 {% block title %}Dashboard{% endblock %}
 {% block body %}
-    Hi {{ user.name }}!
+    <h2 class="mb-3">Dashboard</h2>
+    <div class="card-deck mb-4">
+        {% if user.is_staff %}
+            <div class="card mb-3" style="background-color: #a8cbe2; min-width: 220px;">
+                <div class="card-body">
+                    <h1 class="card-title text-center">{{ num_unapproved_bookings }}</h1>
+                    <p class="card-text text-center">Upcoming bookings that <strong>require approval</strong></p>
+                    <div class="text-center">
+                        <a href="{% url "unapproved-bookings" %}" class="card-link stretched-link">Approve Bookings &#129138;</a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        <div class="card mb-3" style="background-color: #acd6ac; min-width: 220px;">
+            <div class="card-body">
+                <h1 class="card-title text-center">{{ num_upcoming_bookings }}</h1>
+                <p class="card-text text-center">Upcoming bookings that have been <strong>approved</strong></p>
+                <div class="text-center">
+                    <a href="{% url "my-upcoming-bookings" %}" class="card-link stretched-link">My Upcoming Bookings &#129138;</a>
+                </div>
+            </div>
+        </div>
+        <div class="card mb-3 bg-light" style="min-width: 220px;">
+            <div class="card-body">
+                <h1 class="card-title text-center">{{ num_pending_bookings }}</h1>
+                <p class="card-text text-center">Upcoming bookings that are <strong>pending</strong></p>
+                <div class="text-center">
+                    <a href="{% url "my-pending-bookings" %}" class="card-link stretched-link">My Pending Bookings &#129138;</a>
+                </div>
+            </div>
+        </div>
+        <div class="card mb-3" style="background-color: #ffd1cf; min-width: 220px;">
+            <div class="card-body">
+                <h1 class="card-title text-center">{{ num_rejected_bookings }}</h1>
+                <p class="card-text text-center">Bookings that have been <strong>rejected</strong></p>
+                <div class="text-center">
+                    <a href="{% url "my-rejected-bookings" %}" class="card-link stretched-link">My Rejected Bookings &#129138;</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h3>Your Upcoming Bookings</h3>
+    {% if upcoming_bookings %}
+        {% include "bookings/bookings_layout.html" with bookings=upcoming_bookings cancel_btn=True %}
+        <a href="{% url "my-upcoming-bookings" %}" class="btn btn-primary">View All Upcoming Bookings</a>
+    {% else %}
+        No bookings to display.
+    {% endif %}
 {% endblock body %}

@@ -2,15 +2,20 @@
 
 {% block body %}
     <div class="row">
-    <div class="col-lg-3 col-md-4 pr-md-5 col-6 pb-4 order-md-12">
+        <div class="col-lg-3 col-md-4 pr-md-5 col-6 pb-4 order-md-12">
             <h2>Bookings</h2>
             <div class="list-group">
-                <a href="{% url "unapproved-bookings" %}" class="list-group-item px-3 py-2 {% if request.resolver_match.url_name == "unapproved-bookings" %}active{% endif %}">Unapproved</a>
-                <a href="{% url "approved-bookings" %}" class="list-group-item px-3 py-2 {% if request.resolver_match.url_name == "approved-bookings" %}active{% endif %}">Approved</a>
-                <a href="{% url "rejected-bookings" %}" class="list-group-item px-3 py-2 {% if request.resolver_match.url_name == "rejected-bookings" %}active{% endif %}">Rejected</a>
+                <a href="{% url "unapproved-bookings" %}"
+                   class="list-group-item px-3 py-2 {% if request.resolver_match.url_name == "unapproved-bookings" %}active{% endif %}">Unapproved</a>
+                <a href="{% url "approved-bookings" %}"
+                   class="list-group-item px-3 py-2 {% if request.resolver_match.url_name == "approved-bookings" %}active{% endif %}">Approved</a>
+                <a href="{% url "rejected-bookings" %}"
+                   class="list-group-item px-3 py-2 {% if request.resolver_match.url_name == "rejected-bookings" %}active{% endif %}">Rejected</a>
+                <a href="{% url "past-bookings" %}"
+                   class="list-group-item px-3 py-2 {% if request.resolver_match.url_name == "past-bookings" %}active{% endif %}">Past</a>
             </div>
         </div>
-        <div class="col-lg-9 col-md-8 col-12 pb-2 order-md-1">
+        <div class="col-lg-9 col-md-8 col-12 order-md-1">
             {% block content %}
             {% endblock %}
         </div>

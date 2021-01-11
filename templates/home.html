@@ -1,6 +1,15 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Home{% endblock %}
 {% block body %}
-    <h1>What is PR5?</h1>
-    <p>PR5 is the jamming studio at Yale-NUS.</p>
+    <div class="mb-4">
+        <h1>What is PR5?</h1>
+        <p>PR5 is the jamming studio at Yale-NUS.</p>
+        <img src="{% static "pr5_room.jpg" %}" class="img-fluid" alt="Responsive image">
+    </div>
+    <div>
+        <h2 id="booking-pr5">Booking PR5</h2>
+        <p>In order to book PR5, you will need to complete a familiarisation workshop conducted by the PR5 committee members.
+            After completion, you will be able to create an account to make bookings via this website. Please contact <a href="mailto:yalenuspr5@gmail.com">yalenuspr5@gmail.com</a> for info on the workshops.</p>
+    </div>
 {% endblock body %}

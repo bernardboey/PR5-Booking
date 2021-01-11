@@ -1,0 +1,20 @@
+{% extends "registration/profile_layout.html" %}
+
+{% block title %}
+    Profile
+{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Profile</h1>
+    <h5>{% if user.is_staff %}Admin{% else %}Member{% endif %}</h5>
+    <h5 class="mb-3">Email: {{ user.email }}</h5>
+    <h4 class="mb-3">Booking Stats</h4>
+    <p>Number of bookings made: {{ num_bookings }}</p>
+    <p>Number of approved bookings: {{ num_approved_bookings }}</p>
+    <p>Number of rejected bookings: {{ num_rejected_bookings }}</p>
+    {% if user.is_staff %}
+        <h4 class="mb-3">Approval Stats</h4>
+        <p>Number of bookings approved: {{ num_bookings_approved }}</p>
+        <p>Number of bookings rejected: {{ num_bookings_rejected }}</p>
+    {% endif %}
+{% endblock %}

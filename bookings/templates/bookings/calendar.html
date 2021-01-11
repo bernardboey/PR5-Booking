@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Calendar{% endblock %}
+{% block head %}
+    <link href="{% static "fullcalendar/main.min.css" %}" rel='stylesheet'/>
+    <script src="{% static "fullcalendar/main.min.js" %}"></script>
+    <script>
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+            const calendarEl = document.getElementById('calendar');
+
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'timeGridWeek',
+                firstDay: 1,
+                selectable: true,
+                selectMirror: true,
+                selectOverlap: false,
+                nowIndicator: true,
+                allDaySlot: false,
+                events: '{% url "get-bookings" %}',
+                select: function (arg) {
+                    if (arg.start.getDate() !== arg.end.getDate()) {
+                        $('#different-day-error-modal').modal()
+                    } else {
+                        $('#date-selected-modal').modal()
+                        document.querySelector("#booking-date").innerHTML = FullCalendar.formatDate(arg.start, {
+                            month: 'short',
+                            year: 'numeric',
+                            day: '2-digit',
+                        });
+                        const start_time = FullCalendar.formatDate(arg.start, {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: false,
+                        });
+                        const end_time = FullCalendar.formatDate(arg.end, {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: false,
+                        });
+                        document.querySelector("#booking-start-time").innerHTML = `Start: ${start_time}`;
+                        document.querySelector("#booking-end-time").innerHTML = `End: ${end_time}`;
+                        document.querySelector("#input-date").value = FullCalendar.formatDate(arg.start, {
+                            month: '2-digit',
+                            year: 'numeric',
+                            day: '2-digit',
+                        }); // mm/dd/yyyy
+                        document.querySelector("#input-start-time").value = start_time; // HH:MM
+                        document.querySelector("#input-end-time").value = end_time; // HH:MM
+                    }
+                    calendar.unselect()
+                },
+            });
+
+            calendar.render();
+        });
+    </script>
+{% endblock %}
+{% block body %}
+    <h1>PR5 Calendar</h1>
+    <div id='calendar'></div>
+
+    <div class="modal fade" id="different-day-error-modal" tabindex="-1" role="dialog"
+         aria-labelledby="different-day-error-modal-label"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="different-day-error-modal-label">Error</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Booking must be within the same day. Please select again.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="date-selected-modal" tabindex="-1" role="dialog"
+         aria-labelledby="different-day-error-modal-label"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="different-day-error-modal-label">Make a Booking</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>You have selected the following dates and times:</p>
+                    <h5 id="booking-date"></h5>
+                    <h5 id="booking-start-time">Start: </h5>
+                    <h5 id="booking-end-time">End: </h5>
+                </div>
+                <div class="modal-footer">
+                    <form method="get" action="{% url "make-booking" %}">
+                        <input type="hidden" id="input-date" name="booking_date">
+                        <input type="hidden" id="input-start-time" name="start_time">
+                        <input type="hidden" id="input-end-time" name="end_time">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Proceed</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock body %}

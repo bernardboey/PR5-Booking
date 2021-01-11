@@ -3,7 +3,7 @@
 {% block content %}
     <h2>All Unapproved Bookings</h2>
     {% if unapproved_bookings %}
-        {% include "bookings/bookings_layout.html" with bookings=unapproved_bookings approve_btn=True reject_btn=True form=approval_form %}
+        {% include "bookings/bookings_layout.html" with bookings=unapproved_bookings approve_btn=True reject_btn=True form=approval_form admin_view=True %}
     {% else %}
         No outstanding bookings.
     {% endif %}
